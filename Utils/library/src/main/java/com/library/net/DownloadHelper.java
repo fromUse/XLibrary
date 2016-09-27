@@ -65,7 +65,9 @@ public class DownloadHelper {
                             callBack.progress(progress,length);
                         }
                     }
-
+                    if (callBack != null) {
+                        callBack.onSuccess (file);
+                    }
                 }
             }
 

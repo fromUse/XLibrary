@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.cqg.exmple.R;
@@ -25,6 +26,7 @@ import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void update(View view) {
-        String url = WebAPI.prefix + "?versionID=";
+        String url = WebAPI.prefix + "CheckVersion?versionID=";
         EventBus.getDefault().post(url);
 
     }
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+
                 @Override
                 public void onFail(Exception e) {
 
@@ -79,8 +82,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        //下载
-                        EventBus.getDefault().post(version);
+
+
+                        new Thread (new Runnable () {
+                            @Override
+                            public void run() {
+                                onEventBackgroundThread (version);
+                            }
+                        }).start ();
                     }
                 }).setNegativeButton("我不", new DialogInterface.OnClickListener() {
             @Override
@@ -94,14 +103,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Subscribe
     public void onEventBackgroundThread(Version version){
 
         String path = SdCardHelper.getSdCardPath() +"/APK";
-        DownloadHelper.downloadFile(version.getDownloadURL(), path, "mukawang", new DownloadHelper.DownloadCallBack() {
+        DownloadHelper.downloadFile(version.getDownloadURL(), path, "mukawang.apk", new DownloadHelper.DownloadCallBack() {
             @Override
-            public void onSuccess(File file) {
-                Tools.installAPK(MainActivity.this,file);
+            public void onSuccess(final File file) {
+                runOnUiThread (new Runnable () {
+                    @Override
+                    public void run() {
+                        Tools.installAPK(MainActivity.this,file);
+                    }
+                });
             }
 
             @Override
@@ -110,13 +123,18 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onExist(File file) {
-                Tools.installAPK(MainActivity.this,file);
+            public void onExist(final File file) {
+                runOnUiThread (new Runnable () {
+                    @Override
+                    public void run() {
+                        Tools.installAPK(MainActivity.this,file);
+                    }
+                });
             }
 
             @Override
             public void progress(int progress, int total) {
-
+                Log.i (TAG, "progress: ");
             }
         });
     }
