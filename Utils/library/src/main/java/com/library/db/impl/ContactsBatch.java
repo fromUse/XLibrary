@@ -1,4 +1,4 @@
-package com.library.impl;
+package com.library.db.impl;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -8,9 +8,9 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 
-import com.library.I.IBatchable;
+import com.library.db.I.IBatchable;
 import com.library.bean.Contact;
-import com.library.provide.MimeType;
+import com.library.db.MimeType;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,9 @@
-package com.library.factory;
+package com.library.db.factory;
 
 import android.content.Context;
 
-import com.library.I.IBatchable;
-import com.library.impl.ContactsBatch;
+import com.library.db.I.IBatchable;
+import com.library.db.impl.ContactsBatch;
 
 
 /**

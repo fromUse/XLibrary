@@ -68,7 +68,7 @@ public class RequestHelper {
 
 
     public interface RequestCallBack{
-        void onSuccess(String string);
+        void onSuccess(String result);
         void onFail(Exception e);
     }
 }

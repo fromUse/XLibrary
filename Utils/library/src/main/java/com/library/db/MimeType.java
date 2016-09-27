@@ -1,4 +1,4 @@
-package com.library.provide;
+package com.library.db;
 
 import android.provider.ContactsContract;
 
