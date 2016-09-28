@@ -71,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }
-
-
                 @Override
                 public void onFail(Exception e) {
 
@@ -87,12 +85,9 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("有新版本")
 
                 .setMessage(version.getDescribe())
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                .setPositiveButton("更新", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-
-
                         new Thread (new Runnable () {
                             @Override
                             public void run() {
@@ -100,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }).start ();
                     }
-                }).setNegativeButton("我不", new DialogInterface.OnClickListener() {
+                }).setNegativeButton("我就不更", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+               // dialog.dismiss();
             }
         });
 
@@ -115,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     public void onEventBackgroundThread(final Version version){
 
         String path = SdCardHelper.getSdCardPath() +"/APK";
-        DownloadHelper.downloadFile(version.getDownloadURL(), path, "mukawang.apk", new DownloadHelper.DownloadCallBack() {
+        DownloadHelper.downloadFile(version.getDownloadURL(), path, "mukawang2.apk", new DownloadHelper.DownloadCallBack() {
             @Override
             public void onSuccess(final File file) {
                 runOnUiThread (new Runnable () {
@@ -142,9 +137,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void progress(final int progress, int total) {
-
-
+            public void progress(final int progress, final int total) {
                 final int progre = (int)((progress / (total *1.0f))*100);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -152,25 +145,26 @@ public class MainActivity extends AppCompatActivity {
 
                         if (mNotification == null) {
                             Notification.Builder builder = new Notification.Builder(MainActivity.this);
-                            builder.setContentTitle("更新中");
                             builder.setTicker("正在下载新版本...");
                             builder.setSmallIcon(R.mipmap.ic_launcher);
                             mNotification = builder.build();
                             mNotification.flags = Notification.FLAG_AUTO_CANCEL;
                             views = new RemoteViews(getPackageName(),R.layout.download_apk);
                             mNotification.contentView = views;
-
                             views.setProgressBar(R.id.progressBar,100,progre,false);
-
+                            views.setTextViewText (R.id.tvTitle,"x-Exmple");
                             manager = (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
                         }
 
                         if (p!=progre){
                             p = progre;
                             views.setProgressBar(R.id.progressBar,100,progre,false);
+                            views.setTextViewText (R.id.tvsize,Tools.getFileSizeStr (progre));
+                            views.setTextViewText (R.id.tvtotal,Tools.getFileSizeStr (total));
                             if (p ==100){
                                 views.setViewVisibility(R.id.progressBar, View.GONE);
-                                views.setViewVisibility(R.id.done,View.VISIBLE);
+                                views.setViewVisibility(R.id.tvTitle, View.GONE);
+                                views.setViewVisibility(R.id.tvdone,View.VISIBLE);
                                 Log.i(TAG, "run: 下载完啦 ....");
                             }
                             Log.i(TAG, "progress: " + progre);
@@ -189,4 +183,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy ();
+        EventBus.getDefault ().unregister (this);
+    }
 }
