@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">x-exmple</string>
-    <string name="update">Update</string>
+    <string name="update">主动更新</string>
 </resources>
